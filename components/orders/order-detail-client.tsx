@@ -7,7 +7,7 @@ import { AddOrderItemPanel } from "@/components/orders/add-order-item-panel";
 import { EditOrderItemModal } from "@/components/orders/edit-order-item-modal";
 import {
   RecordPaymentForm,
-  UpdatePaymentStatusForm,
+  
 } from "@/components/forms/payment-forms";
 import { formatCurrency } from "@/lib/status-config";
 import type { Vendor } from "@/lib/supabase/database.types";
@@ -142,7 +142,7 @@ export function OrderDetailClient({
         />
         <div className="space-y-4">
           <RecordPaymentForm orderId={order.id} />
-          <UpdatePaymentStatusForm order={order} />
+          
           {payments.length > 0 && (
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
