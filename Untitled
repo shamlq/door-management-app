@@ -1,0 +1,104 @@
+# DoorHub ERP V2 Requirements
+
+## Order Creation
+
+- Auto-generated order number.
+- Customer search dropdown.
+- Create Customer from order screen.
+- Product search dropdown.
+- Create Product from order screen.
+- Multiple products per order.
+- Notes field.
+- Attachments upload.
+- Advance payment field (optional).
+- No vendor assignment during order creation.
+- No measurements during order creation.
+- No status selection during order creation.
+
+## Payments
+
+- Payments are order-level only.
+- No product-level payments.
+- Advance payment creates first payment entry.
+- Payment status auto-calculated.
+
+Rules:
+
+Pending = Paid Amount = 0
+
+Partial = Paid Amount > 0 and < Total
+
+Paid = Paid Amount >= Total
+
+- Payment history editable.
+- Payment history deletable.
+
+## Vendor Assignment
+
+- Vendor assignment after order creation.
+- Admin only.
+- Vendor can be changed anytime.
+- Vendor can be removed anytime.
+- Assigning vendor automatically changes status to Vendor Assigned.
+
+## Orders
+
+- Default Orders page uses Kanban view.
+
+Columns:
+
+- New
+- Vendor Assigned
+- Under Production
+- Ready
+- Installed
+- Payment Pending
+- Completed
+
+- Clicking card opens order details.
+
+## Dashboard
+
+Quick Action Cards:
+
+- New Order
+- Add Product
+- Receive Payment
+
+Payment Summary card clickable.
+
+## Search
+
+Global search across:
+
+- Orders
+- Customers
+- Products
+- Vendors
+
+## Notes
+
+- Notes field on orders.
+- Editable later.
+
+## Attachments
+
+- Upload photos.
+- Upload PDFs.
+- Upload documents.
+- Upload additional files later.
+
+## Roles
+
+Sales:
+- Customers
+- Orders
+- Products in Orders
+- Status Updates
+
+Admin:
+- Vendor Assignment
+- Payments
+- Products
+- Settings
+- Users
