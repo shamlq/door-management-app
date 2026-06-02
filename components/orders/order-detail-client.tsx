@@ -141,7 +141,10 @@ export function OrderDetailClient({
           defaultStatus={defaultItemStatus}
         />
         <div className="space-y-4">
-          <RecordPaymentForm orderId={order.id} />
+          <RecordPaymentForm
+  orderId={order.id}
+  order={order}
+/>
           
           {payments.length > 0 && (
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">

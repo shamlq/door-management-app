@@ -13,7 +13,15 @@ const PAYMENT_STATUSES: PaymentStatus[] = [
   "Overdue",
 ];
 
-export function RecordPaymentForm({ orderId }: { orderId: string }) {
+export function RecordPaymentForm(
+  {
+    orderId,
+    order,
+  }: {
+    orderId: string;
+    order: Order;
+  }
+) {
   const [state, formAction] = useActionState(
     async (_prev: { error: string; success: boolean }, formData: FormData) => {
       formData.set("order_id", orderId);
@@ -27,6 +35,8 @@ export function RecordPaymentForm({ orderId }: { orderId: string }) {
       { success: false, error: "" }
     );
 
+    const [fullPayment, setFullPayment] = useState(false);
+const balanceAmount = order.totalAmount - order.paidAmount;
     return (
       <form
         id="payment-form"
@@ -38,12 +48,27 @@ export function RecordPaymentForm({ orderId }: { orderId: string }) {
           <label className="block">
             <span className="text-xs font-medium text-slate-600">Amount (₹) *</span>
             <input
-              name="amount"
-            type="number"
-            min={1}
-            required
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white"
-          />
+  name="amount"
+  type="number"
+  min={1}
+  required
+  defaultValue={
+  fullPayment
+    ? order.totalAmount - order.paidAmount
+    : undefined
+}
+readOnly={fullPayment}
+  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white"
+/>
+          <label className="mt-2 flex items-center gap-2 text-sm">
+  <input
+    type="checkbox"
+    checked={fullPayment}
+    onChange={(e) => setFullPayment(e.target.checked)}
+  />
+  Received Full Amount
+</label>
+  
         </label>
         <label className="block">
           <span className="text-xs font-medium text-slate-600">Date</span>
