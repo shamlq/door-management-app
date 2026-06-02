@@ -79,6 +79,18 @@ readOnly={fullPayment}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white"
           />
         </label>
+        <label className="block">
+  <span className="text-xs font-medium text-slate-600">
+    Discount (₹)
+  </span>
+  <input
+    name="discount_amount"
+    type="number"
+    min={0}
+    defaultValue={0}
+    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+  />
+</label>
         <label className="block sm:col-span-2">
           <span className="text-xs font-medium text-slate-600">Method</span>
           <input

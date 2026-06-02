@@ -28,6 +28,8 @@ export async function createPayment(formData: FormData): Promise<ActionResult> {
     amount,
     payment_date: paymentDate,
     method: formData.get("method")?.toString().trim() || null,
+    discount_amount:
+  Number(formData.get("discount_amount") ?? 0),
     notes: formData.get("notes")?.toString().trim() || null,
   });
 
@@ -82,6 +84,60 @@ if (paidAmount <= 0) {
   if (error) return { success: false, error: error.message };
 
   revalidatePath(`/orders/${orderId}`);
+  revalidatePath("/payments");
+  revalidatePath("/");
+  return { success: true };
+}
+
+export async function deletePayment(
+  paymentId: string,
+  orderId: string
+): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("payments")
+    .delete()
+    .eq("id", paymentId);
+
+  if (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+
+  revalidatePath(`/orders/${orderId}`);
+  revalidatePath("/payments");
+  revalidatePath("/");
+
+  return { success: true };
+}
+export async function updatePayment(
+  paymentId: string,
+  formData: FormData
+): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("payments")
+    .update({
+      amount: Number(formData.get("amount") ?? 0),
+      payment_date: formData.get("payment_date")?.toString(),
+      method: formData.get("method")?.toString().trim() || null,
+      notes: formData.get("notes")?.toString().trim() || null,
+      discount_amount:
+        Number(formData.get("discount_amount") ?? 0),
+    })
+    .eq("id", paymentId);
+
+  if (error) {
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+
   revalidatePath("/payments");
   revalidatePath("/");
   return { success: true };

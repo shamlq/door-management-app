@@ -10,6 +10,10 @@ import {
   
 } from "@/components/forms/payment-forms";
 import { formatCurrency } from "@/lib/status-config";
+import {
+  deletePayment,
+  updatePayment,
+} from "@/lib/actions/payments";
 import type { Vendor } from "@/lib/supabase/database.types";
 import type { DbPayment } from "@/lib/supabase/database.types";
 import type { Order, OrderItem } from "@/lib/types";
@@ -38,6 +42,17 @@ export function OrderDetailClient({
   defaultItemStatus,
 }: OrderDetailClientProps) {
   const [editingItem, setEditingItem] = useState<OrderItem | null>(null);
+const [editingPayment, setEditingPayment] =
+  useState<string | null>(null);
+
+  const [editedAmount, setEditedAmount] =
+  useState("");
+
+const [editedMethod, setEditedMethod] =
+  useState("");
+
+const [editedDate, setEditedDate] =
+  useState("");
 
   return (
     <>
@@ -151,20 +166,135 @@ export function OrderDetailClient({
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 Payment History
               </h3>
-              <ul className="space-y-2">
-                {payments.map((p) => (
-                  <li
-                    key={p.id}
-                    className="flex justify-between text-sm border-b border-slate-50 pb-2 last:border-0 dark:border-slate-800"
-                  >
-                    <span className="text-slate-600 dark:text-slate-400">
-                      {p.payment_date}
-                      {p.method ? ` · ${p.method}` : ""}
-                    </span>
-                    <span className="font-medium">{formatCurrency(Number(p.amount))}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="overflow-x-auto">
+  <table className="min-w-full text-sm">
+    <thead>
+      <tr className="border-b border-slate-200">
+        <th className="py-2 text-left">Date</th>
+        <th className="py-2 text-left">Method</th>
+        <th className="py-2 text-right">Amount</th>
+        <th className="py-2 text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {payments.map((p) => (
+        <tr
+          key={p.id}
+          className="border-b border-slate-100"
+        >
+          <td className="py-2">
+  {editingPayment === p.id ? (
+    <input
+      type="date"
+      value={editedDate}
+      onChange={(e) => setEditedDate(e.target.value)}
+      className="w-full rounded border px-2 py-1 text-sm"
+    />
+  ) : (
+    p.payment_date
+  )}
+</td>
+
+          <td className="py-2">
+  {editingPayment === p.id ? (
+    <input
+      type="text"
+      value={editedMethod}
+      onChange={(e) => setEditedMethod(e.target.value)}
+      className="w-full rounded border px-2 py-1 text-sm"
+    />
+  ) : (
+    p.method || "-"
+  )}
+</td>
+
+          <td className="py-2 text-right font-medium">
+  {editingPayment === p.id ? (
+    <input
+      type="number"
+      min="1"
+      value={editedAmount}
+      onChange={(e) => setEditedAmount(e.target.value)}
+      className="w-28 rounded border px-2 py-1 text-sm text-right"
+    />
+  ) : (
+    formatCurrency(Number(p.amount))
+  )}
+</td>
+
+<td className="py-2 text-center">
+  {editingPayment === p.id ? (
+  <>
+    <button
+      type="button"
+      onClick={async () => {
+  const formData = new FormData();
+
+  formData.append("amount", editedAmount);
+  formData.append("payment_date", editedDate);
+  formData.append("method", editedMethod);
+
+  const result = await updatePayment(
+    p.id,
+    formData
+  );
+
+  if (result.success) {
+    setEditingPayment(null);
+    window.location.reload();
+  } else {
+    alert(result.error ?? "Failed to update payment");
+  }
+}}
+      className="mr-3 text-emerald-600 hover:text-emerald-700"
+    >
+      Save
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setEditingPayment(null)}
+      className="text-slate-600 hover:text-slate-700"
+    >
+      Cancel
+    </button>
+  </>
+) : (
+  <>
+    <button
+      type="button"
+      onClick={() => {
+  setEditingPayment(p.id);
+  setEditedAmount(String(p.amount));
+  setEditedMethod(p.method || "");
+  setEditedDate(p.payment_date);
+}}
+      className="mr-3 text-blue-600 hover:text-blue-700"
+    >
+      Edit
+    </button>
+
+    <button
+      type="button"
+      onClick={async () => {
+        if (!confirm("Delete this payment?")) return;
+
+        await deletePayment(p.id, order.id);
+        window.location.reload();
+      }}
+      className="text-red-600 hover:text-red-700"
+    >
+      Delete
+    </button>
+  </>
+)}
+</td>
+
+</tr>
+      ))}
+    </tbody>
+  </table>
+</div>
             </section>
           )}
         </div>

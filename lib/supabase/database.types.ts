@@ -198,14 +198,18 @@ export type Database = {
       };
       payments: {
         Row: {
-          id: string;
-          order_id: string;
-          amount: number;
-          payment_date: string;
-          method: string | null;
-          notes: string | null;
-          created_at: string;
-        };
+  id: string;
+  order_id: string;
+  amount: number;
+  payment_date: string;
+  method: string | null;
+  notes: string | null;
+  receipt_no: string | null;
+  discount_amount: number | null;
+  reference_no: string | null;
+  deposit_to: string | null;
+  created_at: string;
+};
         Insert: {
           id?: string;
           order_id: string;
@@ -213,12 +217,20 @@ export type Database = {
           payment_date?: string;
           method?: string | null;
           notes?: string | null;
+          receipt_no?: string | null;
+discount_amount?: number | null;
+reference_no?: string | null;
+deposit_to?: string | null;
         };
         Update: {
           amount?: number;
           payment_date?: string;
           method?: string | null;
           notes?: string | null;
+          receipt_no?: string | null;
+discount_amount?: number | null;
+reference_no?: string | null;
+deposit_to?: string | null;
         };
         Relationships: [
           {
