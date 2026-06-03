@@ -36,7 +36,9 @@ export function RecordPaymentForm(
     );
 
     const [fullPayment, setFullPayment] = useState(false);
+
 const balanceAmount = order.totalAmount - order.paidAmount;
+
     return (
       <form
         id="payment-form"
@@ -44,6 +46,9 @@ const balanceAmount = order.totalAmount - order.paidAmount;
         className="space-y-3 rounded-xl border border-slate-100 bg-slate-50/50 p-4"
       >
         <h4 className="text-sm font-semibold text-slate-900">Record Payment</h4>
+        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
+  Balance Due: ₹{balanceAmount.toLocaleString("en-IN")}
+</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
             <span className="text-xs font-medium text-slate-600">Amount (₹) *</span>

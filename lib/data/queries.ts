@@ -40,6 +40,13 @@ type OrderRow = {
   customer_id: string;
   customers: { name: string } | null;
   order_items: OrderItemRow[];
+  payments: {
+  id: string;
+  amount: number;
+  discount_amount: number | null;
+  payment_date: string;
+  method: string | null;
+}[];
 };
 
 function mapOrderItem(item: OrderItemRow): OrderItem {
@@ -64,6 +71,16 @@ function mapOrder(row: OrderRow): Order {
   const items = (row.order_items ?? []).map(mapOrderItem);
   const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
 
+  const paidAmount = (row.payments ?? []).reduce(
+  (sum, p) => sum + Number(p.amount ?? 0),
+  0
+);
+
+const discountAmount = (row.payments ?? []).reduce(
+  (sum, p) => sum + Number(p.discount_amount ?? 0),
+  0
+);
+
   return {
     id: row.id,
     orderNumber: row.order_number,
@@ -73,7 +90,7 @@ function mapOrder(row: OrderRow): Order {
     createdAt: row.created_at.split("T")[0],
     items,
     totalAmount,
-    paidAmount: Number(row.paid_amount),
+    paidAmount,
     paymentStatus: row.payment_status,
   };
 }
@@ -101,6 +118,13 @@ export const ORDER_SELECT = `
     depth,
     vendors ( id, name ),
     products ( id, name, category )
+  ),
+  payments (
+    id,
+    amount,
+    discount_amount,
+    payment_date,
+    method
   )
 `;
 
