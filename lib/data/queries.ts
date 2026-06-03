@@ -83,6 +83,15 @@ const discountAmount = (row.payments ?? []).reduce(
 );
 const effectivePaid = paidAmount + discountAmount;
 
+let paymentStatus: PaymentStatus = "Pending";
+
+if (effectivePaid <= 0) {
+  paymentStatus = "Pending";
+} else if (effectivePaid >= totalAmount) {
+  paymentStatus = "Paid";
+} else {
+  paymentStatus = "Partial";
+}
   return {
     id: row.id,
     orderNumber: row.order_number,
@@ -93,7 +102,7 @@ const effectivePaid = paidAmount + discountAmount;
     items,
     totalAmount,
     paidAmount,
-    paymentStatus: row.payment_status,
+    paymentStatus,
   };
 } 
 

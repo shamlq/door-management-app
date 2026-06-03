@@ -54,6 +54,21 @@ const [editedMethod, setEditedMethod] =
 const [editedDate, setEditedDate] =
   useState("");
 
+const totalPayments = payments.reduce(
+  (sum, p) => sum + Number(p.amount ?? 0),
+  0
+);
+
+const totalDiscounts = payments.reduce(
+  (sum, p) => sum + Number(p.discount_amount ?? 0),
+  0
+);
+
+const balanceDue =
+  order.totalAmount -
+  totalPayments -
+  totalDiscounts;
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -165,9 +180,27 @@ const [editedDate, setEditedDate] =
           {payments.length > 0 && (
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
-                Payment History
-              </h3>
-              <div className="overflow-x-auto">
+  Payment History
+</h3>
+
+<div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+  <div className="flex justify-between text-sm">
+    <span>Total Payments</span>
+    <span>{formatCurrency(totalPayments)}</span>
+  </div>
+
+  <div className="mt-1 flex justify-between text-sm">
+    <span>Total Discounts</span>
+    <span>{formatCurrency(totalDiscounts)}</span>
+  </div>
+
+  <div className="mt-2 flex justify-between text-sm font-semibold text-red-700">
+    <span>Balance Due</span>
+    <span>{formatCurrency(balanceDue)}</span>
+  </div>
+</div>
+
+<div className="overflow-x-auto">
   <table className="min-w-full text-sm">
     <thead>
       <tr className="border-b border-slate-200">
