@@ -77,9 +77,11 @@ function mapOrder(row: OrderRow): Order {
 );
 
 const discountAmount = (row.payments ?? []).reduce(
+  
   (sum, p) => sum + Number(p.discount_amount ?? 0),
   0
 );
+const effectivePaid = paidAmount + discountAmount;
 
   return {
     id: row.id,
@@ -93,7 +95,7 @@ const discountAmount = (row.payments ?? []).reduce(
     paidAmount,
     paymentStatus: row.payment_status,
   };
-}
+} 
 
 export const ORDER_SELECT = `
   id,

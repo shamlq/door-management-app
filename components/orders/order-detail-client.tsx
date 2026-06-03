@@ -159,6 +159,7 @@ const [editedDate, setEditedDate] =
           <RecordPaymentForm
   orderId={order.id}
   order={order}
+  payments={payments}
 />
           
           {payments.length > 0 && (
@@ -171,9 +172,10 @@ const [editedDate, setEditedDate] =
     <thead>
       <tr className="border-b border-slate-200">
         <th className="py-2 text-left">Date</th>
-        <th className="py-2 text-left">Method</th>
-        <th className="py-2 text-right">Amount</th>
-        <th className="py-2 text-center">Actions</th>
+<th className="py-2 text-left">Method</th>
+<th className="py-2 text-right">Amount</th>
+<th className="py-2 text-right">Discount</th>
+<th className="py-2 text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -220,6 +222,9 @@ const [editedDate, setEditedDate] =
   ) : (
     formatCurrency(Number(p.amount))
   )}
+</td>
+<td className="py-2 text-right">
+  {formatCurrency(Number(p.discount_amount ?? 0))}
 </td>
 
 <td className="py-2 text-center">

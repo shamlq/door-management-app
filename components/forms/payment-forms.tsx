@@ -5,6 +5,7 @@ import { createPayment, updateOrderPayment } from "@/lib/actions/payments";
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { PaymentStatus } from "@/lib/supabase/database.types";
 import type { Order } from "@/lib/types";
+import type { DbPayment } from "@/lib/supabase/database.types";
 
 const PAYMENT_STATUSES: PaymentStatus[] = [
   "Paid",
@@ -17,9 +18,11 @@ export function RecordPaymentForm(
   {
     orderId,
     order,
+    payments,
   }: {
     orderId: string;
     order: Order;
+    payments: DbPayment[];
   }
 ) {
   const [state, formAction] = useActionState(
@@ -37,7 +40,15 @@ export function RecordPaymentForm(
 
     const [fullPayment, setFullPayment] = useState(false);
 
-const balanceAmount = order.totalAmount - order.paidAmount;
+const discountAmount = payments.reduce(
+  (sum, p) => sum + Number(p.discount_amount ?? 0),
+  0
+);
+
+const balanceAmount =
+  order.totalAmount -
+  order.paidAmount -
+  discountAmount;
 
     return (
       <form
