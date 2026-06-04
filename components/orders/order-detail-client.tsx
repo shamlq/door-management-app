@@ -204,6 +204,7 @@ const balanceDue =
   <table className="min-w-full text-sm">
     <thead>
       <tr className="border-b border-slate-200">
+        <th className="py-2 text-left">Receipt No</th>
         <th className="py-2 text-left">Date</th>
 <th className="py-2 text-left">Method</th>
 <th className="py-2 text-right">Amount</th>
@@ -214,10 +215,15 @@ const balanceDue =
     <tbody>
       {payments.map((p) => (
         <tr
-          key={p.id}
-          className="border-b border-slate-100"
-        >
-          <td className="py-2">
+  key={p.id}
+  className="border-b border-slate-100"
+>
+
+<td className="py-2 font-medium">
+  {p.receipt_no ?? "-"}
+</td>
+
+<td className="py-2">
   {editingPayment === p.id ? (
     <input
       type="date"

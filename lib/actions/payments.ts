@@ -23,11 +23,30 @@ export async function createPayment(formData: FormData): Promise<ActionResult> {
   if (amount <= 0) return { success: false, error: "Amount must be greater than 0" };
 
   const supabase = await createClient();
+  const { data: latestReceipt } = await supabase
+  .from("payments")
+  .select("receipt_no")
+  .not("receipt_no", "is", null)
+  .order("created_at", { ascending: false })
+  .limit(1)
+  .maybeSingle();
+
+let receiptNo = "PR-00001";
+
+if (latestReceipt?.receipt_no) {
+  const current =
+    Number(latestReceipt.receipt_no.replace("PR-", ""));
+
+  receiptNo =
+    `PR-${String(current + 1).padStart(5, "0")}`;
+}
   const { error } = await supabase.from("payments").insert({
+    
     order_id: orderId,
     amount,
     payment_date: paymentDate,
     method: formData.get("method")?.toString().trim() || null,
+    receipt_no: receiptNo,
     discount_amount:
   Number(formData.get("discount_amount") ?? 0),
     notes: formData.get("notes")?.toString().trim() || null,
