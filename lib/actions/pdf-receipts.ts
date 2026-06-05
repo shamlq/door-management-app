@@ -61,7 +61,7 @@ export async function generateReceiptPdf(
   );
 
   page.drawText(
-    `Payment Amount: ₹${payment.amount}`,
+    `Payment Amount: Rs. ${payment.amount}`,
     {
       x: 50,
       y: 620,
@@ -71,7 +71,7 @@ export async function generateReceiptPdf(
   );
 
   page.drawText(
-    `Discount: ₹${payment.discount_amount ?? 0}`,
+    `Discount: Rs. ${payment.discount_amount ?? 0}`,
     {
       x: 50,
       y: 600,

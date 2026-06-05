@@ -14,6 +14,8 @@ import {
   deletePayment,
   updatePayment,
 } from "@/lib/actions/payments";
+import { generateReceiptPdf }
+  from "@/lib/actions/pdf-receipts";
 import type { Vendor } from "@/lib/supabase/database.types";
 import type { DbPayment } from "@/lib/supabase/database.types";
 import type { Order, OrderItem } from "@/lib/types";
@@ -330,6 +332,48 @@ const balanceDue =
     >
       Delete
     </button>
+
+    <button
+  type="button"
+  onClick={async () => {
+    
+
+    try {
+      const pdfBytes =
+        await generateReceiptPdf(p.id);
+
+      
+
+      const blob = new Blob(
+  [new Uint8Array(pdfBytes)],
+  { type: "application/pdf" }
+);
+
+const url = URL.createObjectURL(blob);
+
+const link = document.createElement("a");
+
+link.href = url;
+
+link.download =
+  `${p.receipt_no ?? "receipt"}.pdf`;
+
+document.body.appendChild(link);
+
+link.click();
+
+document.body.removeChild(link);
+
+URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("PDF ERROR");
+    }
+  }}
+  className="ml-3 text-green-600 hover:text-green-700"
+>
+  PDF
+</button>
   </>
 )}
 </td>
