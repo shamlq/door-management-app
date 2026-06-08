@@ -444,7 +444,6 @@ export async function getCurrentUser() {
 
 export async function getUserPermissions() {
   const currentUser = await getCurrentUser();
-  console.log("CURRENT USER ID:", currentUser?.id);
 
   if (!currentUser) {
     return [];
@@ -452,13 +451,33 @@ export async function getUserPermissions() {
 
   const supabase = await createClient();
 
-  const { data: userPermissions, error } = await supabase
+  // Get permission IDs assigned to user
+  const { data: userPermissions, error: userPermError } = await supabase
     .from("user_permissions")
     .select("permission_id")
     .eq("user_id", currentUser.id);
 
-  console.log("USER PERMISSIONS:", userPermissions);
-  console.log("USER PERMISSIONS ERROR:", error);
+  if (userPermError || !userPermissions?.length) {
+    console.log("USER PERMISSION ERROR:", userPermError);
+    return [];
+  }
 
-  return userPermissions ?? [];
+  const permissionIds = userPermissions.map(
+    (p) => p.permission_id
+  );
+
+
+  console.log("PERMISSION IDS:", permissionIds);
+
+  
+  // Get permission keys
+  const { data: permissions, error: permError } = await supabase
+    .from("permissions")
+    .select("permission_key")
+    .in("id", permissionIds);
+
+  console.log("PERMISSIONS DATA:", permissions);
+  console.log("PERMISSIONS ERROR:", permError);
+
+  return permissions?.map((p) => p.permission_key) ?? [];
 }
