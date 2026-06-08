@@ -7,12 +7,18 @@ import type {
   PaymentSummary,
 } from "@/lib/types";
 import type {
-  Customer,
-  DbPayment,
-  OrderItemStatus,
-  PaymentStatus,
-  Vendor,
+  Database,
+  Tables,
 } from "@/lib/supabase/database.types";
+
+type Customer = Tables<"customers">;
+type Vendor = Tables<"vendors">;
+type DbPayment = Tables<"payments">;
+
+type OrderItemStatus = string;
+
+type PaymentStatus =
+  Database["public"]["Enums"]["payment_status"];
 
 type OrderItemRow = {
   id: string;
@@ -434,4 +440,25 @@ export async function getCurrentUser() {
     .single();
 
   return data;
+}
+
+export async function getUserPermissions() {
+  const currentUser = await getCurrentUser();
+  console.log("CURRENT USER ID:", currentUser?.id);
+
+  if (!currentUser) {
+    return [];
+  }
+
+  const supabase = await createClient();
+
+  const { data: userPermissions, error } = await supabase
+    .from("user_permissions")
+    .select("permission_id")
+    .eq("user_id", currentUser.id);
+
+  console.log("USER PERMISSIONS:", userPermissions);
+  console.log("USER PERMISSIONS ERROR:", error);
+
+  return userPermissions ?? [];
 }

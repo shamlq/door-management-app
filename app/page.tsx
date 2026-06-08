@@ -8,6 +8,7 @@ import {
   getDashboardStats,
   getPaymentSummary,
   getRecentOrders,
+  getUserPermissions,
 } from "@/lib/data/queries";
 import { canQueryDatabase } from "@/lib/data/safe-query";
 
@@ -39,7 +40,10 @@ const emptySummary = {
 
 export default async function DashboardPage() {
   const ready = await canQueryDatabase();
+  
+const permissions = await getUserPermissions();
 
+console.log("PERMISSIONS:", permissions);
   
 
   const [stats, summary, orders] = ready
