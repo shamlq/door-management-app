@@ -13,14 +13,20 @@ import { canQueryDatabase } from "@/lib/data/safe-query";
 
 const emptyStats = {
   totalOrders: 0,
+  completedOrders: 0,
+  ordersInProgress: 0,
+
   measurementPending: 0,
-  underProduction: 0,
-  ready: 0,
-  installationScheduled: 0,
-  installed: 0,
-  completed: 0,
+  vendorAssignmentPending: 0,
+  inProduction: 0,
+  receivedAtVLocks: 0,
+  installationPending: 0,
+
   paymentPending: 0,
-  pendingCollection: 0,
+
+  totalOrderValue: 0,
+  collectionsReceived: 0,
+  outstandingAmount: 0,
 };
 
 const emptySummary = {

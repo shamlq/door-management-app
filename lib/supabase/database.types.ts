@@ -1,11 +1,14 @@
 export type OrderItemStatus =
   | "New"
   | "Measurement Pending"
+  | "Vendor Assignment Pending"
   | "Vendor Assigned"
-  | "Ready"
-  | "Installation Scheduled"
-  | "Installed"
-  | "Completed";
+  | "In Production"
+  | "Received at V Locks"
+  | "Delivered"
+  | "Installation Pending"
+  | "Completed"
+  | "Cancelled";
 
 export type PaymentStatus = "Paid" | "Partial" | "Pending" | "Overdue";
 
@@ -66,6 +69,38 @@ export type Database = {
         };
         Relationships: [];
       };
+users: {
+  Row: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    password_hash: string | null;
+    is_admin: boolean;
+    is_active: boolean;
+    created_at: string;
+  };
+  Insert: {
+    id?: string;
+    name: string;
+    email: string;
+    phone?: string | null;
+    password_hash?: string | null;
+    is_admin?: boolean;
+    is_active?: boolean;
+  };
+  Update: {
+    name?: string;
+    email?: string;
+    phone?: string | null;
+    password_hash?: string | null;
+    is_admin?: boolean;
+    is_active?: boolean;
+  };
+  Relationships: [];
+};
+
+
       orders: {
         Row: {
           id: string;

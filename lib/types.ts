@@ -37,19 +37,26 @@ export interface Order {
   items: OrderItem[];
   totalAmount: number;
   paidAmount: number;
+  discountAmount: number;
   paymentStatus: PaymentStatus;
 }
 
 export interface DashboardStats {
   totalOrders: number;
+  completedOrders: number;
+  ordersInProgress: number;
+
   measurementPending: number;
-  underProduction: number;
-  ready: number;
-  installationScheduled: number;
-  installed: number;
-  completed: number;
+  vendorAssignmentPending: number;
+  inProduction: number;
+  receivedAtVLocks: number;
+  installationPending: number;
+
   paymentPending: number;
-  pendingCollection: number;
+
+  totalOrderValue: number;
+  collectionsReceived: number;
+  outstandingAmount: number;
 }
 
 export interface PaymentSummary {

@@ -93,17 +93,18 @@ if (effectivePaid <= 0) {
   paymentStatus = "Partial";
 }
   return {
-    id: row.id,
-    orderNumber: row.order_number,
-    customer: row.customers?.name ?? "Unknown",
-    customerId: row.customer_id,
-    project: row.project_name,
-    createdAt: row.created_at.split("T")[0],
-    items,
-    totalAmount,
-    paidAmount,
-    paymentStatus,
-  };
+  id: row.id,
+  orderNumber: row.order_number,
+  customer: row.customers?.name ?? "Unknown",
+  customerId: row.customer_id,
+  project: row.project_name,
+  createdAt: row.created_at.split("T")[0],
+  items,
+  totalAmount,
+  paidAmount,
+  discountAmount,
+  paymentStatus,
+};
 } 
 
 export const ORDER_SELECT = `
@@ -182,16 +183,22 @@ export async function getAllOrders(): Promise<Order[]> {
 
 export async function getDashboardStats(): Promise<DashboardStats> {
   const empty: DashboardStats = {
-    totalOrders: 0,
-    measurementPending: 0,
-    underProduction: 0,
-    ready: 0,
-    installationScheduled: 0,
-    installed: 0,
-    completed: 0,
-    paymentPending: 0,
-    pendingCollection: 0,
-  };
+  totalOrders: 0,
+  completedOrders: 0,
+  ordersInProgress: 0,
+
+  measurementPending: 0,
+  vendorAssignmentPending: 0,
+  inProduction: 0,
+  receivedAtVLocks: 0,
+  installationPending: 0,
+
+  paymentPending: 0,
+
+  totalOrderValue: 0,
+  collectionsReceived: 0,
+  outstandingAmount: 0,
+};
 
   if (!(await canQueryDatabase())) return empty;
 
@@ -224,17 +231,51 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     0
   );
 
+  console.log({
+  totalItemAmount,
+  totalPaid,
+});
+
+console.log({
+  completedOrders: countByStatus("Completed"),
+  vendorAssignmentPending: countByStatus("Vendor Assignment Pending"),
+  inProduction: countByStatus("In Production"),
+  receivedAtVLocks: countByStatus("Received at V Locks"),
+});
+
   return {
-    totalOrders: ordersRes.count ?? 0,
-    measurementPending: countByStatus("Measurement Pending"),
-    underProduction: countByStatus("Vendor Assigned"),
-    ready: countByStatus("Ready"),
-    installationScheduled: countByStatus("Installation Scheduled"),
-    installed: countByStatus("Installed"),
-    completed: countByStatus("Completed"),
-    paymentPending: pendingOrdersRes.data?.length ?? 0,
-    pendingCollection: Math.max(0, totalItemAmount - totalPaid),
-  };
+  totalOrders: ordersRes.count ?? 0,
+
+  completedOrders: countByStatus("Completed"),
+
+  ordersInProgress:
+    (ordersRes.count ?? 0) - countByStatus("Completed"),
+
+  measurementPending: countByStatus("Measurement Pending"),
+
+  vendorAssignmentPending:
+    countByStatus("Vendor Assignment Pending"),
+
+  inProduction: countByStatus("In Production"),
+
+  receivedAtVLocks:
+    countByStatus("Received at V Locks"),
+
+  installationPending:
+    countByStatus("Installation Pending"),
+
+  paymentPending:
+    pendingOrdersRes.data?.length ?? 0,
+
+  totalOrderValue: totalItemAmount,
+
+  collectionsReceived: totalPaid,
+
+  outstandingAmount: Math.max(
+    0,
+    totalItemAmount - totalPaid
+  ),
+};
 }
 
 export async function getPaymentSummary(): Promise<PaymentSummary> {
@@ -294,6 +335,46 @@ export async function getCustomers(): Promise<Customer[]> {
   return data;
 }
 
+export async function getCustomerById(id: string) {
+  if (!(await canQueryDatabase())) return null;
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}
+
+ export async function getOrdersByCustomerId(
+  customerId: string
+): Promise<Order[]> {
+  if (!(await canQueryDatabase())) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(ORDER_SELECT)
+    .eq("customer_id", customerId)
+    .order("created_at", {
+      ascending: false,
+    });
+
+  if (error) throw new Error(error.message);
+
+  const mapped = (data as OrderRow[]).map(mapOrder);
+
+
+
+return mapped;
+}
+
 export async function getVendors(): Promise<Vendor[]> {
   if (!(await canQueryDatabase())) return [];
 
@@ -319,4 +400,17 @@ export async function getPaymentsForOrder(orderId: string): Promise<DbPayment[]>
 
   if (error) throw new Error(error.message);
   return data;
+}
+
+
+export async function getUsers() {
+  const supabase = await createClient();
+
+  const result = await supabase
+    .from("users")
+    .select("*");
+
+  console.log("RESULT:", JSON.stringify(result, null, 2));
+
+  return result.data ?? [];
 }

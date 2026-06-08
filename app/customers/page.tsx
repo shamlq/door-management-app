@@ -3,6 +3,7 @@ import { CustomerForm } from "@/components/forms/customer-form";
 import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getCustomers } from "@/lib/data/queries";
 import { canQueryDatabase } from "@/lib/data/safe-query";
+import Link from "next/link";
 
 export default async function CustomersPage() {
   const customers = (await canQueryDatabase()) ? await getCustomers() : [];
@@ -32,14 +33,22 @@ export default async function CustomersPage() {
             ) : (
               <ul className="divide-y divide-slate-100">
                 {customers.map((c) => (
-                  <li key={c.id} className="px-5 py-4 hover:bg-slate-50/50">
-                    <p className="font-medium text-slate-900">{c.name}</p>
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-slate-500">
-                      {c.email && <span>{c.email}</span>}
-                      {c.phone && <span>{c.phone}</span>}
-                      {c.address && <span>{c.address}</span>}
-                    </div>
-                  </li>
+                  <li key={c.id}>
+  <Link
+    href={`/customers/${c.id}`}
+    className="block px-5 py-4 hover:bg-slate-50/50"
+  >
+    <p className="font-medium text-slate-900">
+      {c.name}
+    </p>
+
+    <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-slate-500">
+      {c.email && <span>{c.email}</span>}
+      {c.phone && <span>{c.phone}</span>}
+      {c.address && <span>{c.address}</span>}
+    </div>
+  </Link>
+</li>
                 ))}
               </ul>
             )}
