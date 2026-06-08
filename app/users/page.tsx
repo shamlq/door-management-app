@@ -4,10 +4,18 @@ import { UserForm } from "../../components/forms/user-form";
 import Link from "next/link";
 import { ConfirmSubmitButton } from "@/components/ui/confirm-submit-button";
 import { disableUser, enableUser } from "./actions";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
 
 
 
 export default async function UsersPage() {
+  const permissions = await getUserPermissions();
+
+  if (!permissions.includes("users.view")) {
+  redirect("/");
+}
+
   const users = await getUsers();
 
   return (
