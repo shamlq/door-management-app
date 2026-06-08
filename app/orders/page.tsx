@@ -6,8 +6,15 @@ import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getAllOrders, getCustomers, getVendors } from "@/lib/data/queries";
 import { formatCurrency } from "@/lib/status-config";
 import { canQueryDatabase } from "@/lib/data/safe-query";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
 
 export default async function OrdersPage() {
+  const permissions = await getUserPermissions();
+
+if (!permissions.includes("orders.view")) {
+  redirect("/");
+}
   const ready = await canQueryDatabase();
   const [orders, customers, vendors] = ready
     ? await Promise.all([getAllOrders(), getCustomers(), getVendors()])

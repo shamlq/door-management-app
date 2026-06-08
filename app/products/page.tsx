@@ -3,9 +3,20 @@ import { ProductsManager } from "@/components/products/products-manager";
 import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getAllProductsAdmin } from "@/lib/data/products";
 import { canQueryDatabase } from "@/lib/data/safe-query";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
+
 
 export default async function ProductsPage() {
-  const products = (await canQueryDatabase()) ? await getAllProductsAdmin() : [];
+  const permissions = await getUserPermissions();
+
+  if (!permissions.includes("products.view")) {
+    redirect("/");
+  }
+
+  const products = (await canQueryDatabase())
+    ? await getAllProductsAdmin()
+    : [];
 
   return (
     <DashboardLayout>

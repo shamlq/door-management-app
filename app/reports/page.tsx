@@ -4,23 +4,37 @@ import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getDashboardStats, getPaymentSummary } from "@/lib/data/queries";
 import { formatCurrency } from "@/lib/status-config";
 import { canQueryDatabase } from "@/lib/data/safe-query";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
 
 export default async function ReportsPage() {
+  const permissions = await getUserPermissions();
+
+  if (!permissions.includes("reports.view")) {
+    redirect("/");
+  }
+
   const ready = await canQueryDatabase();
   const [stats, summary] = ready
     ? await Promise.all([getDashboardStats(), getPaymentSummary()])
     : [
         {
-          totalOrders: 0,
-          measurementPending: 0,
-          underProduction: 0,
-          ready: 0,
-          installationScheduled: 0,
-          installed: 0,
-          completed: 0,
-          paymentPending: 0,
-          pendingCollection: 0,
-        },
+  totalOrders: 0,
+  completedOrders: 0,
+  ordersInProgress: 0,
+
+  measurementPending: 0,
+  vendorAssignmentPending: 0,
+  inProduction: 0,
+  receivedAtVLocks: 0,
+  installationPending: 0,
+
+  paymentPending: 0,
+
+  totalOrderValue: 0,
+  collectionsReceived: 0,
+  outstandingAmount: 0,
+},
         {
           totalRevenue: 0,
           collected: 0,

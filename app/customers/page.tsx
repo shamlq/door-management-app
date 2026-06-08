@@ -4,8 +4,15 @@ import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getCustomers } from "@/lib/data/queries";
 import { canQueryDatabase } from "@/lib/data/safe-query";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
 
 export default async function CustomersPage() {
+  const permissions = await getUserPermissions();
+
+if (!permissions.includes("customers.view")) {
+  redirect("/");
+}
   const customers = (await canQueryDatabase()) ? await getCustomers() : [];
 
   return (

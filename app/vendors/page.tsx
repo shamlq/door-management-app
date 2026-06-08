@@ -3,8 +3,16 @@ import { VendorForm } from "@/components/forms/vendor-form";
 import { SupabaseBanner } from "@/components/ui/supabase-banner";
 import { getVendors } from "@/lib/data/queries";
 import { canQueryDatabase } from "@/lib/data/safe-query";
+import { redirect } from "next/navigation";
+import { getUserPermissions } from "@/lib/data/queries";
 
 export default async function VendorsPage() {
+  const permissions = await getUserPermissions();
+
+  if (!permissions.includes("vendors.view")) {
+    redirect("/");
+  }
+
   const vendors = (await canQueryDatabase()) ? await getVendors() : [];
 
   return (
