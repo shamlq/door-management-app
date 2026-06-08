@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { createClient } from "@/lib/supabase/server";
-import { EditUserForm } from "@/components/forms/edit-user-form";
+import { EditUserForm } from "../../../components/forms/edit-user-form";
 
 type Props = {
   params: Promise<{

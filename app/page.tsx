@@ -40,6 +40,8 @@ const emptySummary = {
 export default async function DashboardPage() {
   const ready = await canQueryDatabase();
 
+  
+
   const [stats, summary, orders] = ready
     ? await Promise.all([
         getDashboardStats(),
