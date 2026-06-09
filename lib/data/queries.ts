@@ -481,3 +481,30 @@ export async function getUserPermissions() {
 
   return permissions?.map((p) => p.permission_key) ?? [];
 }
+
+
+export async function getAllPermissions() {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("permissions")
+    .select("*")
+    .order("permission_key");
+
+  return data ?? [];
+}
+
+
+export async function getUserPermissionIds(userId: string) {
+  
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("user_permissions")
+    .select("permission_id")
+    .eq("user_id", userId);
+
+
+  return data ?? [];
+}

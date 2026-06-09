@@ -94,7 +94,14 @@ export default async function UsersPage() {
       className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
     >
       Edit
+      
     </Link>
+    <Link
+  href={`/users/${user.id}/permissions`}
+  className="rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 hover:bg-purple-100"
+>
+  Permissions
+</Link>
 
     {user.is_active ? (
       <form
