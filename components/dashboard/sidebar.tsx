@@ -74,13 +74,7 @@ export function Sidebar({
             Main Menu
           </p>
           <ul className="space-y-0.5">
-            {navItems
-  .filter(
-    (item) =>
-      !item.permission ||
-      (permissions ?? []).includes(item.permission)
-  )
-  .map((item) => {
+            {navItems.map((item) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
