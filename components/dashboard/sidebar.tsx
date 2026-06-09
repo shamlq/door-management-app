@@ -8,9 +8,16 @@ import { CloseIcon, NavIcon } from "./icons";
 type SidebarProps = {
   open: boolean;
   onClose: () => void;
+  permissions: string[];
 };
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({
+  open,
+  onClose,
+  permissions,
+}: SidebarProps) {
+
+
   const pathname = usePathname();
 
   return (
@@ -67,7 +74,13 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             Main Menu
           </p>
           <ul className="space-y-0.5">
-            {navItems.map((item) => {
+            {navItems
+  .filter(
+    (item) =>
+      !item.permission ||
+      (permissions ?? []).includes(item.permission)
+  )
+  .map((item) => {
               const isActive =
                 item.href === "/"
                   ? pathname === "/"
