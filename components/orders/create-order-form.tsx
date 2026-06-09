@@ -6,7 +6,7 @@ import { ProductAutocomplete } from "@/components/products/product-autocomplete"
 import { SubmitButton } from "@/components/ui/submit-button";
 import { createOrderWithItems } from "@/lib/actions/orders";
 import { formatCurrency } from "@/lib/status-config";
-import type { Customer, Vendor } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 import type { OrderLineInput, Product } from "@/lib/types";
 
 type DraftLine = OrderLineInput & {
@@ -16,8 +16,8 @@ type DraftLine = OrderLineInput & {
 };
 
 type CreateOrderFormProps = {
-  customers: Customer[];
-  vendors: Vendor[];
+  customers: Database["public"]["Tables"]["customers"]["Row"][];
+  vendors: Database["public"]["Tables"]["vendors"]["Row"][];
 };
 
 const initialState = { success: false, error: "" };
