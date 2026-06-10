@@ -113,6 +113,36 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
           />
         </label>
+
+        <label className="block">
+  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+    Measurement Required *
+  </span>
+  <select
+    name="measurement_required"
+    required
+    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+  >
+    <option value="">Select</option>
+    <option value="true">Yes</option>
+    <option value="false">No</option>
+  </select>
+</label>
+
+<label className="block">
+  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+    Installation Required *
+  </span>
+  <select
+    name="installation_required"
+    required
+    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+  >
+    <option value="">Select</option>
+    <option value="true">Yes</option>
+    <option value="false">No</option>
+  </select>
+</label>
         <label className="block sm:col-span-2">
           <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Order number (optional)</span>
           <input

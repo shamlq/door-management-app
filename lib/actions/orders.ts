@@ -6,7 +6,7 @@ import { getProductById } from "@/lib/data/products";
 import { createClient } from "@/lib/supabase/server";
 import type { OrderLineInput } from "@/lib/types";
 import type { ActionResult } from "./customers";
-import type { OrderItemStatus } from "@/lib/supabase/database.types";
+
 import { ORDER_ITEM_STATUSES } from "@/lib/status-config";
 
 async function generateOrderNumber(supabase: Awaited<ReturnType<typeof createClient>>) {
@@ -36,6 +36,13 @@ function lineAmount(line: OrderLineInput, unitPrice: number, quantity: number) {
 export async function createOrderWithItems(formData: FormData): Promise<ActionResult> {
   const customerId = formData.get("customer_id")?.toString();
   const projectName = formData.get("project_name")?.toString().trim();
+
+
+  const measurementRequired =
+  formData.get("measurement_required")?.toString() === "true";
+
+const installationRequired =
+  formData.get("installation_required")?.toString() === "true";
   const lines = parseOrderLines(formData.get("order_lines")?.toString() ?? null);
 
   if (!customerId) return { success: false, error: "Customer is required" };
@@ -53,18 +60,20 @@ export async function createOrderWithItems(formData: FormData): Promise<ActionRe
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
-      customer_id: customerId,
-      order_number: orderNumber,
-      project_name: projectName,
-      payment_status: settings.default_payment_status,
-      paid_amount: 0,
-    })
+  customer_id: customerId,
+  order_number: orderNumber,
+  project_name: projectName,
+  measurement_required: measurementRequired,
+  installation_required: installationRequired,
+  payment_status: settings.default_payment_status,
+  paid_amount: 0,
+})
     .select("id")
     .single();
 
   if (orderError) return { success: false, error: orderError.message };
 
-  const defaultStatus = settings.default_item_status as OrderItemStatus;
+const defaultStatus = settings.default_item_status;
 
   for (const line of lines) {
     const product = await getProductById(line.productId);
@@ -106,6 +115,14 @@ export async function createOrder(formData: FormData): Promise<ActionResult> {
 
   const customerId = formData.get("customer_id")?.toString();
   const projectName = formData.get("project_name")?.toString().trim();
+
+  const measurementRequired =
+  formData.get("measurement_required")?.toString() === "true";
+
+  const installationRequired =
+  formData.get("installation_required")?.toString() === "true";
+
+
 
   if (!customerId) return { success: false, error: "Customer is required" };
   if (!projectName) return { success: false, error: "Project name is required" };
