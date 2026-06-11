@@ -1,6 +1,10 @@
-import type { OrderItemStatus, PaymentStatus } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 
-export type { OrderItemStatus, PaymentStatus };
+export type OrderItemStatus =
+  Database["public"]["Enums"]["order_item_status"];
+
+export type PaymentStatus =
+  Database["public"]["Enums"]["payment_status"];
 
 export interface Product {
   id: string;

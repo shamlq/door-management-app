@@ -37,12 +37,29 @@ export async function createOrderWithItems(formData: FormData): Promise<ActionRe
   const customerId = formData.get("customer_id")?.toString();
   const projectName = formData.get("project_name")?.toString().trim();
 
+  const expectedDeliveryDate =
+  formData.get("expected_delivery_date")?.toString() || null;
+
+  const notes =
+  formData.get("notes")?.toString().trim() || null;
 
   const measurementRequired =
   formData.get("measurement_required")?.toString() === "true";
 
 const installationRequired =
   formData.get("installation_required")?.toString() === "true";
+
+  const advancePaymentReceived =
+  formData.get("advance_payment_received")?.toString() === "yes";
+
+const advanceAmount = Number(
+  formData.get("advance_amount")?.toString() || 0
+);
+
+const advancePaymentMethod =
+  formData.get("advance_payment_method")?.toString() || null;
+
+
   const lines = parseOrderLines(formData.get("order_lines")?.toString() ?? null);
 
   if (!customerId) return { success: false, error: "Customer is required" };
@@ -65,13 +82,53 @@ const installationRequired =
   project_name: projectName,
   measurement_required: measurementRequired,
   installation_required: installationRequired,
+  expected_delivery_date: expectedDeliveryDate,
+  notes,
   payment_status: settings.default_payment_status,
   paid_amount: 0,
 })
-    .select("id")
-    .single();
+    .select("id, order_number")
+      .single();
 
   if (orderError) return { success: false, error: orderError.message };
+
+  if (
+  advancePaymentReceived &&
+  advanceAmount > 0 &&
+  advancePaymentMethod
+) {
+  const { data: latestAdv } = await supabase
+    .from("payments")
+    .select("receipt_no")
+    .like("receipt_no", "ADV-%")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let receiptNo = "ADV-00001";
+
+  if (latestAdv?.receipt_no) {
+    const num = Number(latestAdv.receipt_no.replace("ADV-", ""));
+    receiptNo = `ADV-${String(num + 1).padStart(5, "0")}`;
+  }
+
+  await supabase.from("payments").insert({
+    order_id: order.id,
+    amount: advanceAmount,
+    method: advancePaymentMethod,
+    payment_date: new Date().toISOString().split("T")[0],
+    receipt_no: receiptNo,
+    notes: "Advance Payment",
+  });
+
+  await supabase
+    .from("orders")
+    .update({
+      paid_amount: advanceAmount,
+      payment_status: "Partial",
+    })
+    .eq("id", order.id);
+}
 
 const defaultStatus = settings.default_item_status;
 

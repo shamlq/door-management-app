@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { PaymentStatus } from "@/lib/supabase/database.types";
 import type { ActionResult } from "./customers";
+import type { Database } from "@/lib/supabase/database.types";
 
-const PAYMENT_STATUSES: PaymentStatus[] = [
+const PAYMENT_STATUSES = [
   "Paid",
   "Partial",
   "Pending",
@@ -67,7 +67,7 @@ export async function   updateOrderPayment(
   const paidAmount =
   Number(formData.get("paid_amount") ?? 0);
 
-let paymentStatus: PaymentStatus = "Pending";
+let paymentStatus: Database["public"]["Enums"]["payment_status"] = "Pending";
 
   
 const supabase = await createClient();

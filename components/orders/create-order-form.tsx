@@ -25,6 +25,7 @@ const initialState = { success: false, error: "" };
 export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
   const router = useRouter();
   const [lines, setLines] = useState<DraftLine[]>([]);
+  const [advancePaymentReceived, setAdvancePaymentReceived] = useState("");
 
   const [state, formAction] = useActionState(
     async (_prev: typeof initialState, formData: FormData) => {
@@ -106,7 +107,7 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
           </select>
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Project name *</span>
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Location *</span>
           <input
             name="project_name"
             required
@@ -143,22 +144,80 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
     <option value="false">No</option>
   </select>
 </label>
-        <label className="block sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Order number (optional)</span>
-          <input
-            name="order_number"
-            placeholder="Auto-generated if empty"
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-          />
-        </label>
+
+<label className="block">
+  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+    Expected Delivery Date
+  </span>
+  <input
+    type="date"
+    name="expected_delivery_date"
+    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+  />
+</label>
+
       </div>
 
       <div>
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Add products *</span>
+        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          Add products *</span>
         <div className="mt-1">
           <ProductAutocomplete onSelect={addProduct} />
         </div>
       </div>
+
+<div className="grid gap-4 sm:grid-cols-3">
+  <label className="block">
+    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+      Advance Payment Received *
+    </span>
+    <select
+      name="advance_payment_received"
+      required
+      value={advancePaymentReceived}
+      onChange={(e) => setAdvancePaymentReceived(e.target.value)}
+      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+    >
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </label>
+
+  {advancePaymentReceived === "yes" && (
+    <>
+      <label className="block">
+        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          Advance Amount
+        </span>
+        <input
+          type="number"
+          name="advance_amount"
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+        />
+      </label>
+
+      <label className="block">
+        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+          Advance Payment Method
+        </span>
+        <select
+          name="advance_payment_method"
+          className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+        >
+          <option value="">Select Method</option>
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cheque">Cheque</option>
+        </select>
+      </label>
+    </>
+  )}
+</div>
 
       {lines.length > 0 && (
         <ul className="space-y-3">
@@ -241,6 +300,20 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
           Order total: {formatCurrency(total)}
         </p>
       )}
+
+
+<label className="block">
+  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+    Notes
+  </span>
+  <textarea
+    name="notes"
+    rows={4}
+    placeholder="Special instructions, customer requests, delivery notes..."
+    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+  />
+</label>
+
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
       <SubmitButton label="Create Order" />
