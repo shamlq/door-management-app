@@ -8,6 +8,10 @@ import { createOrderWithItems } from "@/lib/actions/orders";
 import { formatCurrency } from "@/lib/status-config";
 import type { Database } from "@/lib/supabase/database.types";
 import type { OrderLineInput, Product } from "@/lib/types";
+import {
+  CustomerAutocomplete,
+  type Customer,
+} from "@/components/customers/customer-autocomplete";
 
 type DraftLine = OrderLineInput & {
   productName: string;
@@ -25,6 +29,7 @@ const initialState = { success: false, error: "" };
 export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
   const router = useRouter();
   const [lines, setLines] = useState<DraftLine[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [advancePaymentReceived, setAdvancePaymentReceived] = useState("");
 
   const [state, formAction] = useActionState(
@@ -92,20 +97,29 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block sm:col-span-2">
-          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Customer *</span>
-          <select
-            name="customer_id"
-            required
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-          >
-            <option value="">Select customer</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
+  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+    Customer *
+  </span>
+
+  <input
+    type="hidden"
+    name="customer_id"
+    value={selectedCustomer?.id ?? ""}
+  />
+
+  <div className="mt-1">
+    <CustomerAutocomplete
+      onSelect={(customer) => setSelectedCustomer(customer)}
+      placeholder="Search customer by name or phone..."
+    />
+  </div>
+
+  {selectedCustomer && (
+    <p className="mt-1 text-xs text-green-600">
+      Selected: {selectedCustomer.name} ({selectedCustomer.phone})
+    </p>
+  )}
+</label>
         <label className="block sm:col-span-2">
           <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Location *</span>
           <input

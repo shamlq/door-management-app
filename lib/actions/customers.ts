@@ -64,3 +64,18 @@ export async function deleteCustomer(id: string): Promise<ActionResult> {
   revalidatePath("/");
   return { success: true };
 }
+
+
+export async function searchCustomersAction(query: string) {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("customers")
+    .select("*")
+    .or(`name.ilike.%${query}%,phone.ilike.%${query}%`)
+    .limit(20);
+
+  return data ?? [];
+}
+
+
