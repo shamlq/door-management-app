@@ -44,6 +44,8 @@ type OrderRow = {
   paid_amount: number;
   created_at: string;
   customer_id: string;
+    expected_delivery_date: string | null;
+  notes: string | null;
   customers: { name: string } | null;
   order_items: OrderItemRow[];
   payments: {
@@ -63,7 +65,7 @@ function mapOrderItem(item: OrderItemRow): OrderItem {
     productCategory: item.products?.category ?? null,
     vendorId: item.vendor_id,
     vendor: item.vendors?.name ?? null,
-    status: item.status,
+    status: item.status as Database["public"]["Enums"]["order_item_status"],
     quantity: Number(item.quantity ?? 1),
     unitPrice: Number(item.unit_price ?? item.amount),
     amount: Number(item.amount),
@@ -98,12 +100,16 @@ if (effectivePaid <= 0) {
 } else {
   paymentStatus = "Partial";
 }
-  return {
+ return {
   id: row.id,
   orderNumber: row.order_number,
   customer: row.customers?.name ?? "Unknown",
   customerId: row.customer_id,
   project: row.project_name,
+
+  expectedDeliveryDate: row.expected_delivery_date,
+  notes: row.notes,
+
   createdAt: row.created_at.split("T")[0],
   items,
   totalAmount,
@@ -117,6 +123,8 @@ export const ORDER_SELECT = `
   id,
   order_number,
   project_name,
+  expected_delivery_date,
+  notes,
   payment_status,
   paid_amount,
   created_at,

@@ -1,5 +1,6 @@
 import type { Database } from "@/lib/supabase/database.types";
 
+
 export type OrderItemStatus =
   Database["public"]["Enums"]["order_item_status"];
 
@@ -37,6 +38,8 @@ export interface Order {
   customer: string;
   customerId: string;
   project: string;
+  expectedDeliveryDate?: string | null;
+  notes?: string | null;
   createdAt: string;
   items: OrderItem[];
   totalAmount: number;

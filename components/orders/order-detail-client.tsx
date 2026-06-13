@@ -16,10 +16,17 @@ import {
 } from "@/lib/actions/payments";
 import { generateReceiptPdf }
   from "@/lib/actions/pdf-receipts";
-import type { Vendor } from "@/lib/supabase/database.types";
-import type { DbPayment } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 import type { Order, OrderItem } from "@/lib/types";
-import type { OrderItemStatus } from "@/lib/supabase/database.types";
+
+
+
+type Vendor = Database["public"]["Tables"]["vendors"]["Row"];
+
+type DbPayment = Database["public"]["Tables"]["payments"]["Row"];
+
+type OrderItemStatus =
+  Database["public"]["Enums"]["order_item_status"];
 
 type OrderDetailClientProps = {
   order: Order;
@@ -85,9 +92,30 @@ const balanceDue =
             <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
               {order.orderNumber}
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{order.customer}</p>
-            <p className="text-sm text-slate-500">{order.project}</p>
-            <p className="text-xs text-slate-400 mt-2">Created {order.createdAt}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+  {order.customer}
+</p>
+
+<p className="text-sm text-slate-500">
+  {order.project}
+</p>
+
+
+{order.expectedDeliveryDate && (
+  <p className="mt-1 text-sm text-slate-600">
+    📅 Delivery: {new Date(order.expectedDeliveryDate).toLocaleDateString("en-GB")}
+  </p>
+)}
+
+{order.notes && (
+  <p className="mt-1 text-sm text-slate-600">
+    📝 {order.notes}
+  </p>
+)}
+
+<p className="text-xs text-slate-400 mt-2">
+  Created {new Date(order.createdAt).toLocaleDateString("en-GB")}
+</p>
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
