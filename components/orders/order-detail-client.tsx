@@ -18,7 +18,7 @@ import { generateReceiptPdf }
   from "@/lib/actions/pdf-receipts";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Order, OrderItem } from "@/lib/types";
-
+import { formatDate } from "@/lib/utils";
 
 
 type Vendor = Database["public"]["Tables"]["vendors"]["Row"];
@@ -103,7 +103,7 @@ const balanceDue =
 
 {order.expectedDeliveryDate && (
   <p className="mt-1 text-sm text-slate-600">
-    📅 Delivery: {new Date(order.expectedDeliveryDate).toLocaleDateString("en-GB")}
+    📅 Delivery: {formatDate(order.expectedDeliveryDate)}
   </p>
 )}
 
@@ -114,7 +114,7 @@ const balanceDue =
 )}
 
 <p className="text-xs text-slate-400 mt-2">
-  Created {new Date(order.createdAt).toLocaleDateString("en-GB")}
+  Created {formatDate(order.createdAt)}
 </p>
           </div>
           <div className="text-right">
@@ -262,8 +262,8 @@ const balanceDue =
       className="w-full rounded border px-2 py-1 text-sm"
     />
   ) : (
-    p.payment_date
-  )}
+  formatDate(p.payment_date)
+)}
 </td>
 
           <td className="py-2">

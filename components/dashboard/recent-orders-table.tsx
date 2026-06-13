@@ -2,6 +2,7 @@ import Link from "next/link";
 import { formatCurrency } from "@/lib/status-config";
 import type { Order } from "@/lib/types";
 import { StatusBadge } from "./status-badge";
+import { formatDate } from "@/lib/utils";
 
 type RecentOrdersTableProps = {
   orders: Order[];
@@ -70,7 +71,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
                       {order.orderNumber}
                     </Link>
                     <p className="mt-0.5 text-xs text-slate-400">
-                      {order.createdAt}
+                      {formatDate(order.createdAt)}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
                       {order.items.length} item
