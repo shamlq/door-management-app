@@ -44,8 +44,12 @@ type OrderRow = {
   paid_amount: number;
   created_at: string;
   customer_id: string;
-    expected_delivery_date: string | null;
+  expected_delivery_date: string | null;
   notes: string | null;
+
+  measurement_required: boolean | null;
+  installation_required: boolean | null;
+  
   customers: { name: string } | null;
   order_items: OrderItemRow[];
   payments: {
@@ -109,8 +113,10 @@ if (effectivePaid <= 0) {
 
   expectedDeliveryDate: row.expected_delivery_date,
   notes: row.notes,
+  measurementRequired: row.measurement_required,
+  installationRequired: row.installation_required,
 
-  createdAt: row.created_at.split("T")[0],
+  createdAt: row.created_at,
   items,
   totalAmount,
   paidAmount,
@@ -125,6 +131,8 @@ export const ORDER_SELECT = `
   project_name,
   expected_delivery_date,
   notes,
+  measurement_required,
+  installation_required,
   payment_status,
   paid_amount,
   created_at,

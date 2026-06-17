@@ -40,6 +40,8 @@ export interface Order {
   project: string;
   expectedDeliveryDate?: string | null;
   notes?: string | null;
+  measurementRequired?: boolean | null;
+  installationRequired?: boolean | null;
   createdAt: string;
   items: OrderItem[];
   totalAmount: number;

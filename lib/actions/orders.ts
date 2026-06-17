@@ -220,9 +220,20 @@ export async function updateOrder(
   const { error } = await supabase
     .from("orders")
     .update({
-      project_name: projectName,
-      customer_id: formData.get("customer_id")?.toString() || undefined,
-    })
+  project_name: projectName,
+
+  expected_delivery_date:
+    formData.get("expected_delivery_date")?.toString() || null,
+
+  notes:
+    formData.get("notes")?.toString().trim() || null,
+
+  measurement_required:
+    formData.get("measurement_required")?.toString() === "true",
+
+  installation_required:
+    formData.get("installation_required")?.toString() === "true",
+})
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };

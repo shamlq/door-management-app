@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { AddOrderItemPanel } from "@/components/orders/add-order-item-panel";
@@ -19,6 +19,7 @@ import { generateReceiptPdf }
 import type { Database } from "@/lib/supabase/database.types";
 import type { Order, OrderItem } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { updateOrder } from "@/lib/actions/orders";
 
 
 type Vendor = Database["public"]["Tables"]["vendors"]["Row"];
@@ -51,6 +52,51 @@ export function OrderDetailClient({
   defaultItemStatus,
 }: OrderDetailClientProps) {
   const [editingItem, setEditingItem] = useState<OrderItem | null>(null);
+
+  const [editingOrder, setEditingOrder] = useState(false);
+const [isPending, startTransition] = useTransition();
+
+const [projectName, setProjectName] =
+  useState(order.project);
+
+const [deliveryDate, setDeliveryDate] =
+  useState(order.expectedDeliveryDate || "");
+
+const [notes, setNotes] =
+  useState(order.notes || "");
+
+const [measurementRequired, setMeasurementRequired] =
+  useState(order.measurementRequired ?? false);
+
+const [installationRequired, setInstallationRequired] =
+  useState(order.installationRequired ?? false);
+
+  async function handleSaveOrder() {
+  const formData = new FormData();
+
+  formData.set("project_name", projectName);
+  formData.set("expected_delivery_date", deliveryDate);
+  formData.set("notes", notes);
+  formData.set(
+    "measurement_required",
+    String(measurementRequired)
+  );
+  formData.set(
+    "installation_required",
+    String(installationRequired)
+  );
+
+  startTransition(async () => {
+    const result = await updateOrder(order.id, formData);
+
+    if (result.success) {
+      window.location.reload();
+    } else {
+      alert(result.error ?? "Failed to update order");
+    }
+  });
+}
+  
 const [editingPayment, setEditingPayment] =
   useState<string | null>(null);
 
@@ -89,27 +135,109 @@ const balanceDue =
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-900">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-              {order.orderNumber}
-            </h1>
+  <div className="flex items-center gap-3">
+    <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+      {order.orderNumber}
+    </h1>
+
+    <div className="flex gap-2">
+  {editingOrder && (
+    <button
+      type="button"
+      onClick={handleSaveOrder}
+      disabled={isPending}
+      className="rounded bg-green-600 px-2 py-1 text-xs text-white"
+    >
+      {isPending ? "Saving..." : "Save"}
+    </button>
+  )}
+
+  <button
+    type="button"
+    onClick={() => setEditingOrder(!editingOrder)}
+    className="rounded border px-2 py-1 text-xs hover:bg-slate-50"
+  >
+    {editingOrder ? "Cancel" : "Edit Order"}
+  </button>
+</div>
+  </div>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
   {order.customer}
 </p>
 
-<p className="text-sm text-slate-500">
-  {order.project}
-</p>
-
-
-{order.expectedDeliveryDate && (
-  <p className="mt-1 text-sm text-slate-600">
-    📅 Delivery: {formatDate(order.expectedDeliveryDate)}
+{editingOrder ? (
+  <input
+    type="text"
+    value={projectName}
+    onChange={(e) => setProjectName(e.target.value)}
+    className="mt-1 w-full max-w-md rounded border px-3 py-2 text-sm"
+  />
+) : (
+  <p className="text-sm text-slate-500">
+    {order.project}
   </p>
 )}
 
-{order.notes && (
+
+{editingOrder ? (
+  <input
+    type="date"
+    value={deliveryDate}
+    onChange={(e) => setDeliveryDate(e.target.value)}
+    className="mt-1 rounded border px-3 py-2 text-sm"
+  />
+) : (
+  order.expectedDeliveryDate && (
+    <p className="mt-1 text-sm text-slate-600">
+      📅 Delivery: {formatDate(order.expectedDeliveryDate)}
+    </p>
+  )
+)}
+
+{editingOrder ? (
+  <textarea
+    value={notes}
+    onChange={(e) => setNotes(e.target.value)}
+    rows={3}
+    className="mt-1 w-full max-w-md rounded border px-3 py-2 text-sm"
+  />
+) : (
+  order.notes && (
+    <p className="mt-1 text-sm text-slate-600">
+      📝 {order.notes}
+    </p>
+  )
+)}
+
+{editingOrder ? (
+  <label className="mt-1 block text-sm">
+    <input
+      type="checkbox"
+      checked={measurementRequired}
+      onChange={(e) => setMeasurementRequired(e.target.checked)}
+      className="mr-2"
+    />
+    Measurement Required
+  </label>
+) : (
   <p className="mt-1 text-sm text-slate-600">
-    📝 {order.notes}
+    📏 Measurement: {order.measurementRequired ? "Yes" : "No"}
+  </p>
+)}
+
+{editingOrder ? (
+  <label className="mt-1 block text-sm">
+    <input
+      type="checkbox"
+      checked={installationRequired}
+      onChange={(e) => setInstallationRequired(e.target.checked)}
+      className="mr-2"
+    />
+    Installation Required
+  </label>
+) : (
+  <p className="mt-1 text-sm text-slate-600">
+    🔧 Installation: {order.installationRequired ? "Yes" : "No"}
   </p>
 )}
 
