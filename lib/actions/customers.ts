@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export type ActionResult = { success: boolean; error?: string; id?: string };
 
@@ -50,8 +51,10 @@ export async function updateCustomer(
   if (error) return { success: false, error: error.message };
 
   revalidatePath("/customers");
-  revalidatePath("/");
-  return { success: true };
+revalidatePath(`/customers/${id}`);
+revalidatePath("/");
+
+redirect(`/customers/${id}`);
 }
 
 export async function deleteCustomer(id: string): Promise<ActionResult> {

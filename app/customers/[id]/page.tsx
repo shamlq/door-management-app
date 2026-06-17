@@ -49,9 +49,18 @@ const lastOrderDate =
         </h1>
 
         <div className="rounded-2xl border bg-white p-6">
-          <h2 className="text-lg font-semibold">
-  {customer?.name}
-</h2>
+          <div className="flex items-center justify-between">
+  <h2 className="text-lg font-semibold">
+    {customer?.name}
+  </h2>
+
+  <Link
+    href={`/customers/${id}/edit`}
+    className="rounded border px-3 py-1 text-sm hover:bg-slate-50"
+  >
+    Edit Customer
+  </Link>
+</div>
 
 <div className="mt-3 space-y-2 text-sm">
   <p>Email: {customer?.email ?? "-"}</p>
