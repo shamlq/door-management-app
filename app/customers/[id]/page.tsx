@@ -20,10 +20,26 @@ export default async function CustomerDetailPage({
 const customer = await getCustomerById(id);
 const orders = await getOrdersByCustomerId(id);
 
-console.log(
-  JSON.stringify(orders[0], null, 2)
+const totalRevenue = orders.reduce(
+  (sum, order) => sum + order.totalAmount,
+  0
 );
 
+const totalPaid = orders.reduce(
+  (sum, order) =>
+    sum + order.paidAmount + order.discountAmount,
+  0
+);
+
+const totalOutstanding =
+  totalRevenue - totalPaid;
+
+const lastOrderDate =
+  orders.length > 0
+    ? orders
+        .map((o) => new Date(o.createdAt))
+        .sort((a, b) => b.getTime() - a.getTime())[0]
+    : null;
 
   return (
     <DashboardLayout>
@@ -42,6 +58,52 @@ console.log(
   <p>Phone: {customer?.phone ?? "-"}</p>
   <p>Address: {customer?.address ?? "-"}</p>
 </div>
+<div className="mt-6 grid grid-cols-5 gap-4">
+  <div className="rounded-lg border p-4">
+    <p className="text-xs text-slate-500">
+      Total Orders
+    </p>
+    <p className="text-xl font-bold">
+      {orders.length}
+    </p>
+  </div>
+
+  <div className="rounded-lg border p-4">
+    <p className="text-xs text-slate-500">
+      Revenue
+    </p>
+    <p className="text-xl font-bold text-green-600">
+      ₹{totalRevenue.toLocaleString("en-IN")}
+    </p>
+  </div>
+<div className="rounded-lg border p-4">
+  <p className="text-xs text-slate-500">
+    Paid
+  </p>
+  <p className="text-xl font-bold text-blue-600">
+    ₹{totalPaid.toLocaleString("en-IN")}
+  </p>
+</div>
+  <div className="rounded-lg border p-4">
+    <p className="text-xs text-slate-500">
+      Outstanding
+    </p>
+    <p className="text-xl font-bold text-red-600">
+      ₹{totalOutstanding.toLocaleString("en-IN")}
+    </p>
+  </div>
+  <div className="rounded-lg border p-4">
+  <p className="text-xs text-slate-500">
+    Last Order
+  </p>
+
+  <p className="text-sm font-bold">
+    {lastOrderDate
+      ? lastOrderDate.toLocaleDateString("en-GB")
+      : "-"}
+  </p>
+</div>
+</div>
 
 <section className="mt-8">
   <h3 className="text-lg font-semibold mb-4">
@@ -57,14 +119,18 @@ console.log(
 >
       <div className="flex items-start justify-between">
         <div>
-          <span className="font-semibold">
-  {order.orderNumber}
-</span>
+  <span className="font-semibold">
+    {order.orderNumber}
+  </span>
 
-          <p className="text-sm text-slate-600">
-            {order.project}
-          </p>
-        </div>
+  <p className="text-sm text-slate-600">
+    {order.project}
+  </p>
+
+  <p className="text-xs text-slate-400 mt-1">
+    Order Date: {new Date(order.createdAt).toLocaleDateString("en-GB")}
+  </p>
+</div>
 
         <span
   className={`rounded-full px-3 py-1 text-xs font-semibold ${
