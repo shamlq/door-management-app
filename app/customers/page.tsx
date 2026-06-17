@@ -6,6 +6,7 @@ import { canQueryDatabase } from "@/lib/data/safe-query";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getUserPermissions } from "@/lib/data/queries";
+import { CustomersList } from "@/components/customers/customers-list";
 
 export default async function CustomersPage() {
   const permissions = await getUserPermissions();
@@ -38,26 +39,7 @@ if (!permissions.includes("customers.view")) {
             {customers.length === 0 ? (
               <p className="px-5 py-8 text-sm text-slate-500">No customers yet.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
-                {customers.map((c) => (
-                  <li key={c.id}>
-  <Link
-    href={`/customers/${c.id}`}
-    className="block px-5 py-4 hover:bg-slate-50/50"
-  >
-    <p className="font-medium text-slate-900">
-      {c.name}
-    </p>
-
-    <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-slate-500">
-      {c.email && <span>{c.email}</span>}
-      {c.phone && <span>{c.phone}</span>}
-      {c.address && <span>{c.address}</span>}
-    </div>
-  </Link>
-</li>
-                ))}
-              </ul>
+              <CustomersList customers={customers} />
             )}
           </section>
         </div>
