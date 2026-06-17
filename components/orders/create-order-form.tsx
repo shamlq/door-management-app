@@ -146,39 +146,111 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
 
 <label className="block">
   <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-    Installation Required *
-  </span>
-  <select
-    name="installation_required"
-    required
-    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-  >
-    <option value="">Select</option>
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</label>
+      Installation Required *
+    </span>
+    <select
+      name="installation_required"
+      required
+      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </label>
 
-<label className="block">
-  <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-    Expected Delivery Date
-  </span>
-  <input
-    type="date"
-    name="expected_delivery_date"
-    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-  />
-</label>
+  <label className="block">
+    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+      Expected Delivery Date
+    </span>
+    <input
+      type="date"
+      name="expected_delivery_date"
+      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+    />
+  </label>
 
-      </div>
-
-      <div>
-        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-          Add products *</span>
-        <div className="mt-1">
-          <ProductAutocomplete onSelect={addProduct} />
         </div>
-      </div>
+
+        <div>
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            Add products *</span>
+          <div className="mt-1">
+            <ProductAutocomplete onSelect={addProduct} />
+          </div>
+
+          
+          
+        </div>
+
+        {lines.length > 0 && (
+        <ul className="space-y-3">
+          {lines.map((line, index) => (
+            <li
+              key={line.productId}
+              className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50"
+            >
+              <div className="flex justify-between gap-2">
+                <div>
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {line.productName}
+                  </p>
+                  <p className="text-xs text-slate-500">{line.category}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeLine(index)}
+                  className="text-xs text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <label className="block">
+                  <span className="text-[10px] text-slate-500">Qty</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={line.quantity ?? 1}
+                    onChange={(e) =>
+                      updateLine(index, { quantity: Number(e.target.value) })
+                    }
+                    className="mt-0.5 w-full rounded border border-slate-200 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] text-slate-500">Unit price (₹)</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={line.unitPrice ?? line.basePrice}
+                    onChange={(e) =>
+                      updateLine(index, { unitPrice: Number(e.target.value) })
+                    }
+                    className="mt-0.5 w-full rounded border border-slate-200 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800"
+                  />
+                </label>
+                
+              </div>
+              <p className="mt-2 text-sm font-semibold text-right">
+  Amount: {formatCurrency((line.quantity ?? 1) * (line.unitPrice ?? line.basePrice))}
+</p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+{lines.length > 0 && (
+  <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-right text-sm font-semibold dark:bg-slate-800">
+    Order Total: {formatCurrency(
+      lines.reduce(
+        (sum, line) =>
+          sum + ((line.quantity ?? 1) * (line.unitPrice ?? line.basePrice)),
+        0
+      )
+    )}
+  </div>
+)}  
 
 <div className="grid gap-4 sm:grid-cols-3">
   <label className="block">
@@ -233,87 +305,7 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
   )}
 </div>
 
-      {lines.length > 0 && (
-        <ul className="space-y-3">
-          {lines.map((line, index) => (
-            <li
-              key={line.productId}
-              className="rounded-xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/50"
-            >
-              <div className="flex justify-between gap-2">
-                <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                    {line.productName}
-                  </p>
-                  <p className="text-xs text-slate-500">{line.category}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeLine(index)}
-                  className="text-xs text-red-600 hover:underline"
-                >
-                  Remove
-                </button>
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                <label className="block">
-                  <span className="text-[10px] text-slate-500">Qty</span>
-                  <input
-                    type="number"
-                    min={1}
-                    value={line.quantity ?? 1}
-                    onChange={(e) =>
-                      updateLine(index, { quantity: Number(e.target.value) })
-                    }
-                    className="mt-0.5 w-full rounded border border-slate-200 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-[10px] text-slate-500">Unit price (₹)</span>
-                  <input
-                    type="number"
-                    min={0}
-                    value={line.unitPrice ?? line.basePrice}
-                    onChange={(e) =>
-                      updateLine(index, { unitPrice: Number(e.target.value) })
-                    }
-                    className="mt-0.5 w-full rounded border border-slate-200 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800"
-                  />
-                </label>
-                <label className="block sm:col-span-1">
-                  <span className="text-[10px] text-slate-500">Vendor (optional)</span>
-                  <select
-                    value={line.vendorId ?? ""}
-                    onChange={(e) =>
-                      updateLine(index, {
-                        vendorId: e.target.value || null,
-                      })
-                    }
-                    className="mt-0.5 w-full rounded border border-slate-200 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800"
-                  >
-                    <option value="">No vendor</option>
-                    {vendors.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <p className="mt-2 text-xs text-slate-500">
-                Line total:{" "}
-                {formatCurrency((line.quantity ?? 1) * (line.unitPrice ?? line.basePrice))}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {lines.length > 0 && (
-        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-          Order total: {formatCurrency(total)}
-        </p>
-      )}
+     
 
 
 <label className="block">
