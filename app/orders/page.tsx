@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/status-config";
 import { canQueryDatabase } from "@/lib/data/safe-query";
 import { redirect } from "next/navigation";
 import { getUserPermissions } from "@/lib/data/queries";
+import { OrdersList } from "@/components/orders/orders-list";
 
 export default async function OrdersPage() {
   const permissions = await getUserPermissions();
@@ -55,33 +56,7 @@ if (!permissions.includes("orders.view")) {
             {orders.length === 0 ? (
               <p className="px-5 py-8 text-sm text-slate-500">No orders yet.</p>
             ) : (
-              <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-                {orders.map((order) => (
-                  <li key={order.id}>
-                    <Link
-                      href={`/orders/${order.id}`}
-                      className="block px-5 py-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div>
-                          <p className="font-semibold text-slate-900 dark:text-slate-100">
-                            {order.orderNumber}
-                          </p>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">{order.customer}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{order.project}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">{formatCurrency(order.totalAmount)}</p>
-                          <StatusBadge status={order.paymentStatus} variant="payment" size="sm" />
-                        </div>
-                      </div>
-                      <p className="mt-2 text-xs text-slate-400">
-                        {order.items.length} product{order.items.length !== 1 ? "s" : ""} · {order.createdAt}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <OrdersList orders={orders} />
             )}
           </section>
         </div>
