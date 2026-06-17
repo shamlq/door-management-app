@@ -107,12 +107,20 @@ export function CreateOrderForm({ customers, vendors }: CreateOrderFormProps) {
     value={selectedCustomer?.id ?? ""}
   />
 
-  <div className="mt-1">
-    <CustomerAutocomplete
-      onSelect={(customer) => setSelectedCustomer(customer)}
-      placeholder="Search customer by name or phone..."
-    />
-  </div>
+  <div className="mt-1 space-y-2">
+  <CustomerAutocomplete
+    onSelect={(customer) => setSelectedCustomer(customer)}
+    placeholder="Search customer by name or phone..."
+  />
+
+  <a
+    href="/customers/new"
+    target="_blank"
+    className="inline-block text-sm font-medium text-blue-600 hover:underline"
+  >
+    + Add New Customer
+  </a>
+</div>
 
   {selectedCustomer && (
     <p className="mt-1 text-xs text-green-600">

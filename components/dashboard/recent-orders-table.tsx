@@ -21,6 +21,7 @@ export function RecentOrdersTable({ orders }: RecentOrdersTableProps) {
           </p>
         </div>
         <Link
+        
           href="/orders"
           className="self-start rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition-colors sm:self-auto"
         >

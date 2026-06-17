@@ -17,7 +17,7 @@ type CustomerAutocompleteProps = {
 
 export function CustomerAutocomplete({
   onSelect,
-  placeholder = "Search products by name or category...",
+  placeholder = "Search customer by name or phone...",
   disabled,
 }: CustomerAutocompleteProps) {
   const [query, setQuery] = useState("");
@@ -75,8 +75,22 @@ export function CustomerAutocomplete({
             <li className="px-3 py-2 text-xs text-slate-500">Searching...</li>
           )}
           {!loading && results.length === 0 && query.length > 0 && (
-            <li className="px-3 py-2 text-xs text-slate-500">No customers found</li>
-          )}
+  <>
+    <li className="px-3 py-2 text-xs text-slate-500">
+      No customers found
+    </li>
+
+    <li>
+      <a
+        href="/customers/new"
+        target="_blank"
+        className="block px-3 py-2 text-sm font-medium text-blue-600 hover:bg-slate-50"
+      >
+        + Add New Customer
+      </a>
+    </li>
+  </>
+)}
           {results.map((p) => (
             <li key={p.id}>
               <button
