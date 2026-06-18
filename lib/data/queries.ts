@@ -524,3 +524,24 @@ export async function getUserPermissionIds(userId: string) {
 
   return data ?? [];
 }
+
+
+export async function getOrderAttachments(
+  orderId: string
+) {
+  if (!(await canQueryDatabase())) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("order_attachments")
+    .select("*")
+    .eq("order_id", orderId)
+    .order("uploaded_at", {
+      ascending: false,
+    });
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}
