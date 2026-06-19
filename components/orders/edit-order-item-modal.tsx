@@ -9,9 +9,12 @@ import {
 import { ProductAutocomplete } from "@/components/products/product-autocomplete";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ORDER_ITEM_STATUSES } from "@/lib/status-config";
-import type { Vendor } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 import type { OrderItem, Product } from "@/lib/types";
 
+type Vendor =
+  Database["public"]["Tables"]["vendors"]["Row"];
+  
 type EditOrderItemModalProps = {
   item: OrderItem | null;
   orderId: string;

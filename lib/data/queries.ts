@@ -10,6 +10,7 @@ import type {
   Database,
   Tables,
 } from "@/lib/supabase/database.types";
+import type { WorkflowStatus } from "@/lib/types";
 
 type Customer = Tables<"customers">;
 type Vendor = Tables<"vendors">;
@@ -49,6 +50,7 @@ type OrderRow = {
 
   measurement_required: boolean | null;
   installation_required: boolean | null;
+  workflow_status: string | null;
   
   customers: { name: string } | null;
   order_items: OrderItemRow[];
@@ -58,6 +60,8 @@ type OrderRow = {
   discount_amount: number | null;
   payment_date: string;
   method: string | null;
+  
+  
 }[];
 };
 
@@ -104,6 +108,7 @@ if (effectivePaid <= 0) {
 } else {
   paymentStatus = "Partial";
 }
+
  return {
   id: row.id,
   orderNumber: row.order_number,
@@ -122,6 +127,11 @@ if (effectivePaid <= 0) {
   paidAmount,
   discountAmount,
   paymentStatus,
+
+  workflowStatus:
+  row.workflow_status
+    ? (row.workflow_status as WorkflowStatus)
+    : "Measurement Pending",
 };
 } 
 
@@ -133,6 +143,7 @@ export const ORDER_SELECT = `
   notes,
   measurement_required,
   installation_required,
+  workflow_status,
   payment_status,
   paid_amount,
   created_at,

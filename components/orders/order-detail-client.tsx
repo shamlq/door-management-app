@@ -71,6 +71,8 @@ const [measurementRequired, setMeasurementRequired] =
 const [installationRequired, setInstallationRequired] =
   useState(order.installationRequired ?? false);
 
+  const workflowStatus = order.workflowStatus;
+  
   async function handleSaveOrder() {
   const formData = new FormData();
 
@@ -164,6 +166,10 @@ const balanceDue =
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
   {order.customer}
 </p>
+
+<div className="mt-3 inline-flex items-center rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700">
+  Workflow: {workflowStatus}
+</div>
 
 {editingOrder ? (
   <input
