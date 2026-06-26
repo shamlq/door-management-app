@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { getErpSettings } from "@/lib/data/settings";
 import { getProductById } from "@/lib/data/products";
 import { createClient } from "@/lib/supabase/server";
-import type { OrderItemStatus } from "@/lib/supabase/database.types";
+import { calculateOrderWorkflow } from "@/lib/workflow";
+import type { OrderItemStatus } from "@/lib/types";
 import type { ActionResult } from "./customers";
 import { ORDER_ITEM_STATUSES } from "@/lib/status-config";
 
@@ -21,6 +22,28 @@ function parseVendorId(raw: string | null | undefined): string | null {
 
 function calcAmount(quantity: number, unitPrice: number) {
   return Math.round(quantity * unitPrice * 100) / 100;
+}
+
+async function updateOrderWorkflow(orderId: string) {
+  const supabase = await createClient();
+
+  const { data: items, error } = await supabase
+    .from("order_items")
+    .select("status")
+    .eq("order_id", orderId);
+
+  if (error || !items) return;
+
+  const statuses = items.map((item) => item.status);
+
+  const workflowStatus = calculateOrderWorkflow(statuses);
+
+  await supabase
+  .from("orders")
+  .update({
+    workflow_status: workflowStatus,
+  } as any)
+  .eq("id", orderId);
 }
 
 export async function addOrderItem(formData: FormData): Promise<ActionResult> {
@@ -74,6 +97,7 @@ export async function updateOrderItemFull(
   formData: FormData
 ): Promise<ActionResult> {
   const productId = formData.get("product_id")?.toString();
+  console.log("EDIT PRODUCT ID:", productId);
   const status = formData.get("status")?.toString() as OrderItemStatus;
   const quantity = Math.max(1, Number(formData.get("quantity") ?? 1));
   const unitPrice = Number(formData.get("unit_price") ?? 0);
@@ -85,7 +109,11 @@ export async function updateOrderItemFull(
   }
 
   const product = await getProductById(productId);
-  if (!product) return { success: false, error: "Product not found" };
+
+console.log("PRODUCT FOUND:", product);
+
+if (!product)
+  return { success: false, error: "Product not found" };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -106,8 +134,10 @@ export async function updateOrderItemFull(
 
   if (error) return { success: false, error: error.message };
 
-  revalidateOrder(orderId);
-  return { success: true };
+await updateOrderWorkflow(orderId);
+
+revalidateOrder(orderId);
+return { success: true };
 }
 
 export async function updateOrderItemStatus(

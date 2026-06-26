@@ -14,7 +14,7 @@ import type { OrderItem, Product } from "@/lib/types";
 
 type Vendor =
   Database["public"]["Tables"]["vendors"]["Row"];
-  
+
 type EditOrderItemModalProps = {
   item: OrderItem | null;
   orderId: string;
@@ -32,7 +32,10 @@ export function EditOrderItemModal({
 }: EditOrderItemModalProps) {
   const [isPending, startTransition] = useTransition();
 
-  const [state, formAction] = useActionState(
+  console.log("EDIT ITEM:", item);
+console.log("PRODUCT ID:", item?.productId);
+
+  const [state, formAction]  = useActionState(
     async (_prev: typeof initialState, formData: FormData) => {
       if (!item) return { success: false, error: "No item selected" };
       const result = await updateOrderItemFull(item.id, orderId, formData);
@@ -45,9 +48,6 @@ export function EditOrderItemModal({
     initialState
   );
 
-  useEffect(() => {
-    if (state.success) onClose();
-  }, [state.success, onClose]);
 
   if (!item) return null;
 
@@ -64,6 +64,7 @@ export function EditOrderItemModal({
           Edit Order Item
         </h3>
         <p className="text-xs text-slate-500 mt-0.5">{item.name}</p>
+
 
         <form action={formAction} className="mt-4 space-y-4">
           <input type="hidden" name="product_id" id="edit-product-id" defaultValue={item.productId ?? ""} />

@@ -296,6 +296,10 @@ const balanceDue =
                   <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
                     <td className="px-5 py-3">
                       <p className="font-medium text-slate-900 dark:text-slate-100">{item.name}</p>
+                      <p className="text-red-500 text-xs">
+  ProductId: {String(item.productId)}
+</p>
+
                       {item.productCategory && (
                         <p className="text-xs text-slate-500">{item.productCategory}</p>
                       )}
